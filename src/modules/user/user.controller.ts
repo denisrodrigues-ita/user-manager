@@ -6,25 +6,32 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserModel } from './model/user.model';
 import {
   DocsCreateUser,
   DocsFindUser,
   DocsRemoveUser,
   DocsUpdateUser,
 } from './user.docs';
+import { UserResponseDto } from './dto/user-response.dto';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { UserType } from '@prisma/client';
 
 @Controller('user')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserType.ADMIN)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
   @DocsCreateUser()
-  create(@Body() createUserDto: CreateUserDto): Promise<UserModel> {
+  create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
     const user = this.userService.create(createUserDto);
 
     return user;
@@ -32,7 +39,7 @@ export class UserController {
 
   @Get(':email')
   @DocsFindUser()
-  async findOne(@Param('email') email: string): Promise<UserModel> {
+  async findOne(@Param('email') email: string): Promise<UserResponseDto> {
     const user = await this.userService.findOne(email);
 
     return user;
@@ -43,7 +50,7 @@ export class UserController {
   async update(
     @Param('email') email: string,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<UserModel> {
+  ): Promise<UserResponseDto> {
     const userUpdated = await this.userService.update(email, updateUserDto);
 
     return userUpdated;

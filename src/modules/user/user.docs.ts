@@ -18,8 +18,7 @@ export function DocsFindUser() {
 export function DocsUpdateUser() {
   return applyDecorators(
     ApiOkResponse({ type: UserModel, description: 'User profile' }),
-    ApiBody({ type: UpdateUserDto,
-      description: 'User data to update'  }),
+    ApiBody({ type: UpdateUserDto, description: 'User data to update' }),
   );
 }
 

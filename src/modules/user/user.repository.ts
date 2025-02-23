@@ -7,17 +7,9 @@ import { Prisma } from '@prisma/client';
 export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  private static readonly userSelect: Prisma.UserSelect = {
-    id: true,
-    name: true,
-    email: true,
-    type: true,
-  };
-
   async create(data: Prisma.UserCreateInput): Promise<UserModel> {
     const user = await this.prisma.user.create({
       data,
-      select: UserRepository.userSelect,
     });
 
     return user;
@@ -26,7 +18,6 @@ export class UserRepository {
   async findOne(where: Prisma.UserWhereUniqueInput): Promise<UserModel | null> {
     const user = await this.prisma.user.findUnique({
       where,
-      select: UserRepository.userSelect,
     });
 
     return user;
@@ -39,7 +30,6 @@ export class UserRepository {
     const user = await this.prisma.user.update({
       where,
       data,
-      select: UserRepository.userSelect,
     });
 
     return user;
